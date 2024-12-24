@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 
 class CardFavorite extends StatelessWidget {
   const CardFavorite(
-      {super.key, required this.imagePath, required this.title, required this.isFavorite, required this.onFavoriteToogle, required this.likes});
+      {super.key,
+      required this.imagePath,
+      required this.title,
+      required this.isFavorite,
+      required this.onFavoriteToogle,
+      required this.likes});
 
   final String imagePath;
   final String title;
@@ -14,7 +19,7 @@ class CardFavorite extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color: Colors.white,
-      elevation: 8.0,
+      elevation: 0.0,
       margin: const EdgeInsets.only(right: 16.0),
       child: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -64,4 +69,3 @@ class CardFavorite extends StatelessWidget {
     );
   }
 }
-

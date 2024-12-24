@@ -46,7 +46,8 @@ class StartPage extends StatelessWidget {
                 height: 48.0,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HomePage()));
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFDF7B07),
