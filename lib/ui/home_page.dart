@@ -12,6 +12,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final ScrollController _scrollController = ScrollController();
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   final storeItems = storeList.toList();
   void toggleFavorite(int index) {
     setState(() {
@@ -34,12 +41,11 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25.0, vertical: 10.0),
               child: Row(
                 children: [
-                  const Text(
+                  Text(
                     'Hello, Welcome to ',
                     style: TextStyle(
                       fontFamily: "BebasNeue",
@@ -53,7 +59,7 @@ class _HomePageState extends State<HomePage> {
                       fontFamily: "BebasNeue",
                       fontWeight: FontWeight.bold,
                       fontSize: 22.0,
-                      color: const Color(0xFFDF7B07),
+                      color: Color(0xFFDF7B07),
                       letterSpacing: 1.2,
                     ),
                   ),
@@ -78,50 +84,52 @@ class _HomePageState extends State<HomePage> {
                         const SizedBox(height: 16.0),
                         SizedBox(
                           height: 250.0,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: storeItems
-                                .where((item) => item.favorite)
-                                .length,
-                            itemBuilder: (context, index) {
-                              // Ambil hanya item favorit
-                              final favoriteItems = storeItems
+                          child: Scrollbar(
+                            controller: _scrollController,
+                            child: ListView.builder(
+                              controller: _scrollController,
+                              scrollDirection: Axis.horizontal,
+                              itemCount: storeItems
                                   .where((item) => item.favorite)
-                                  .toList();
-                              final item = favoriteItems[index];
+                                  .length,
+                              itemBuilder: (context, index) {
+                                final favoriteItems = storeItems
+                                    .where((item) => item.favorite)
+                                    .toList();
+                                final item = favoriteItems[index];
 
-                              return InkWell(
-                                onTap: () => {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => DetailListPage(
-                                        storeItem: storeItems[storeItems
-                                            .indexOf(item)], // Index asli
-                                        toggleFavorite: () => toggleFavorite(
-                                            storeItems.indexOf(item)),
+                                return InkWell(
+                                  onTap: () => {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => DetailListPage(
+                                          storeItem: storeItems[
+                                              storeItems.indexOf(item)],
+                                          toggleFavorite: () => toggleFavorite(
+                                              storeItems.indexOf(item)),
+                                        ),
                                       ),
-                                    ),
-                                  )
-                                },
-                                child: CardFavorite(
-                                  imagePath: item.imagePath,
-                                  title: item.name,
-                                  isFavorite: item.favorite,
-                                  onFavoriteToogle: () =>
-                                      toggleFavorite(storeItems.indexOf(item)),
-                                  likes: item.likes,
-                                ),
-                              );
-                            },
+                                    )
+                                  },
+                                  child: CardFavorite(
+                                    imagePath: item.imagePath,
+                                    title: item.name,
+                                    isFavorite: item.favorite,
+                                    onFavoriteToogle: () => toggleFavorite(
+                                        storeItems.indexOf(item)),
+                                    likes: item.likes,
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ],
                     ),
                   )
                 : const SizedBox(),
-            Expanded(
-              flex: 2,
+            Flexible(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                     horizontal: 25.0, vertical: 10.0),
@@ -138,31 +146,56 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     const SizedBox(height: 16.0),
-                    Expanded(
-                      child: ListView.builder(
-                        scrollDirection: Axis.vertical,
-                        itemCount: storeItems.length,
-                        itemBuilder: (context, index) {
-                          final storeItem = storeItems[index];
-                          return InkWell(
+                    Flexible(child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        // Tentukan jumlah grid berdasarkan lebar layar
+                        int crossAxisCount;
+                        double width = constraints.maxWidth;
+
+                        if (width >= 1600) {
+                          crossAxisCount = 4; // 4 kolom untuk layar >= 1600
+                        } else if (width >= 1200) {
+                          crossAxisCount = 3; // 3 kolom untuk layar >= 1200
+                        } else if (width >= 600) {
+                          crossAxisCount = 2; // 2 kolom untuk layar >= 600
+                        } else {
+                          crossAxisCount = 1; // 1 kolom untuk layar < 600
+                        }
+
+                        return GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: crossAxisCount,
+                            crossAxisSpacing: 10.0,
+                            mainAxisSpacing: 10.0,
+                            childAspectRatio: 3 / 1,
+                          ),
+                          itemCount: storeItems.length,
+                          itemBuilder: (context, index) {
+                            final storeItem = storeItems[index];
+                            return InkWell(
                               onTap: () => {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                DetailListPage(
-                                                  storeItem: storeItems[index],
-                                                  toggleFavorite: () =>
-                                                      toggleFavorite(index),
-                                                )))
-                                  },
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DetailListPage(
+                                      storeItem: storeItems[index],
+                                      toggleFavorite: () =>
+                                          toggleFavorite(index),
+                                    ),
+                                  ),
+                                )
+                              },
                               child: CardRestaurant(
-                                  imagePath: storeItem.imagePath,
-                                  title: storeItem.name,
-                                  description: storeItem.description));
-                        },
-                      ),
-                    )
+                                imagePath: storeItem.imagePath,
+                                title: storeItem.name,
+                                description: storeItem.description,
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ))
                   ],
                 ),
               ),

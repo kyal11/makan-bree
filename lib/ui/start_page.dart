@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:makan_bree/ui/home_page.dart';
 
@@ -42,7 +43,7 @@ class StartPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: SizedBox(
-                width: double.infinity,
+                width: kIsWeb ? 300 : double.infinity,
                 height: 48.0,
                 child: ElevatedButton(
                   onPressed: () {
